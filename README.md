@@ -1,114 +1,771 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Card Number Validation API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A simple REST API built with **Node.js, TypeScript, and NestJS** for validating payment card numbers using the **Luhn algorithm**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The project was built as part of a backend engineering assessment, with a focus on correctness, clean code structure, input validation, error handling, testing, and maintainability.
 
-## Description
+## Overview
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This project provides a single API endpoint that accepts a card number and determines whether the number passes the **Luhn checksum algorithm**.
 
-## Project setup
+The API does not communicate with a bank, payment processor, or card network.
 
-```bash
-$ bun install
+A successful validation means that the card number is mathematically valid according to the Luhn algorithm. It does **not** mean that the card:
+
+* Actually exists
+* Has been issued by a financial institution
+* Is active
+* Has sufficient funds
+* Can be used for a transaction
+* Belongs to a particular person
+
+The goal of this project is to demonstrate a clean and maintainable backend implementation rather than to perform real-world card authorization.
+
+---
+
+## Features
+
+* Card number validation
+* Luhn algorithm implementation
+* Type-safe TypeScript code
+* Strict TypeScript configuration
+* Request DTO validation
+* Automatic validation using NestJS `ValidationPipe`
+* Handling of missing or malformed input
+* Support for card numbers containing spaces
+* Unexpected request field detection
+* Unit tests
+* End-to-end API tests
+* Clean modular NestJS architecture
+
+---
+
+## Technology Stack
+
+| Technology        | Purpose                           |
+| ----------------- | --------------------------------- |
+| Node.js           | JavaScript runtime                |
+| TypeScript        | Type-safe application development |
+| NestJS            | Backend framework                 |
+| class-validator   | Request validation                |
+| class-transformer | DTO transformation                |
+| Vitest            | Test runner                       |
+| Supertest         | HTTP/API testing                  |
+| Bun               | Package manager and script runner |
+
+---
+
+## Project Structure
+
+```text
+card-validator-api/
+│
+├── src/
+│   ├── card/
+│   │   ├── dto/
+│   │   │   └── validate-card.dto.ts
+│   │   │
+│   │   ├── card.controller.ts
+│   │   ├── card.service.ts
+│   │   ├── card.service.spec.ts
+│   │   └── card.module.ts
+│   │
+│   ├── app.module.ts
+│   └── main.ts
+│
+├── test/
+│   └── card.e2e-spec.ts
+│
+├── .gitignore
+├── package.json
+├── README.md
+├── tsconfig.json
+└── ...
 ```
 
-## Compile and run the project
+### `card.controller.ts`
 
-```bash
-# development
-$ bun run start
+Responsible for handling HTTP requests and responses.
 
-# watch mode
-$ bun run start:dev
+It exposes:
 
-# production mode
-$ bun run start:prod
+```text
+POST /cards/validate
 ```
 
-## Run tests
+The controller receives the request DTO and passes the card number to the service.
+
+### `card.service.ts`
+
+Contains the main business logic for validating card numbers using the Luhn algorithm.
+
+Keeping the validation logic inside the service means the controller remains focused on HTTP concerns.
+
+### `validate-card.dto.ts`
+
+Defines the expected structure of incoming requests and validates the request before it reaches the business logic.
+
+### `card.module.ts`
+
+Groups the card controller and service into a single NestJS feature module.
+
+### `card.service.spec.ts`
+
+Contains unit tests for the card validation logic.
+
+### `card.e2e-spec.ts`
+
+Contains end-to-end tests that test the API through HTTP requests.
+
+---
+
+# Getting Started
+
+## Requirements
+
+Before running the project, make sure you have the following installed:
+
+* Node.js 18+
+* Bun
+
+You can verify your installations with:
 
 ```bash
-# unit tests
-$ bun run test
-
-# e2e tests
-$ bun run test:e2e
-
-# test coverage
-$ bun run test:cov
+node --version
+bun --version
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# Installation
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Clone the repository:
 
 ```bash
-$ bun install -g @nestjs/mau
-$ mau deploy
+git clone https://github.com/KhalidMujahid/Card-Number-Validation-API.git
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Navigate into the project:
 
-## Observability
+```bash
+cd Card-Number-Validation-API
+```
 
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
+Install dependencies:
 
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
+```bash
+bun install
+```
 
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
+---
 
-## Resources
+# Running the Application
 
-Check out a few resources that may come in handy when working with NestJS:
+## Development
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Start the application in development mode:
 
-## Support
+```bash
+bun run start:dev
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+The API will be available at:
 
-## Stay in touch
+```text
+http://localhost:3000
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+---
 
-## License
+## Production Build
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Build the application:
+
+```bash
+bun run build
+```
+
+Start the production build:
+
+```bash
+bun run start:prod
+```
+
+---
+
+# API Documentation
+
+## Validate Card Number
+
+### Endpoint
+
+```http
+POST /cards/validate
+```
+
+### Content-Type
+
+```http
+Content-Type: application/json
+```
+
+---
+
+## Request Format
+
+The endpoint expects a JSON object containing a `cardNumber` field.
+
+Example:
+
+```json
+{
+  "cardNumber": "4111111111111111"
+}
+```
+
+The card number is accepted as a string intentionally.
+
+Card numbers should not be represented as JavaScript numbers because card numbers can be long and may contain formatting such as spaces.
+
+Using a string also prevents accidental loss of precision.
+
+---
+
+## Valid Card Number
+
+Example request:
+
+```http
+POST /cards/validate
+```
+
+```json
+{
+  "cardNumber": "4111111111111111"
+}
+```
+
+Example response:
+
+```json
+{
+  "valid": true
+}
+```
+
+---
+
+## Invalid Card Number
+
+Example request:
+
+```json
+{
+  "cardNumber": "4111111111111112"
+}
+```
+
+Example response:
+
+```json
+{
+  "valid": false
+}
+```
+
+A card number that fails the Luhn checksum is considered invalid.
+
+---
+
+## Card Number With Spaces
+
+The API supports card numbers containing spaces.
+
+Example:
+
+```json
+{
+  "cardNumber": "4111 1111 1111 1111"
+}
+```
+
+Example response:
+
+```json
+{
+  "valid": true
+}
+```
+
+Spaces are removed before the Luhn validation is performed.
+
+---
+
+# Input Validation
+
+The API validates incoming requests before passing them to the card validation service.
+
+The expected field is:
+
+```text
+cardNumber
+```
+
+It must:
+
+* Exist
+* Be a string
+* Not be empty
+
+For example, the following request is invalid:
+
+```json
+{}
+```
+
+The API returns:
+
+```http
+400 Bad Request
+```
+
+---
+
+## Invalid Data Type
+
+The following request is invalid:
+
+```json
+{
+  "cardNumber": 4111111111111111
+}
+```
+
+The API expects the card number to be a string.
+
+The response is:
+
+```http
+400 Bad Request
+```
+
+---
+
+## Unexpected Fields
+
+The API is configured to reject unexpected properties.
+
+For example:
+
+```json
+{
+  "cardNumber": "4111111111111111",
+  "extraField": "unexpected"
+}
+```
+
+This request returns:
+
+```http
+400 Bad Request
+```
+
+This behavior is enabled using NestJS's `ValidationPipe` configuration:
+
+```typescript
+new ValidationPipe({
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true,
+})
+```
+
+---
+
+# Validation Approach
+
+## Luhn Algorithm
+
+The project uses the **Luhn algorithm** to validate card numbers.
+
+The algorithm works by processing the digits from right to left.
+
+For every second digit:
+
+1. Double the digit.
+2. If the result is greater than 9, subtract 9.
+3. Add the resulting values together.
+4. If the final sum is divisible by 10, the number passes the Luhn check.
+
+For example:
+
+```text
+4111111111111111
+```
+
+passes the Luhn checksum.
+
+While:
+
+```text
+4111111111111112
+```
+
+does not.
+
+---
+
+## Why Luhn?
+
+The Luhn algorithm was chosen because:
+
+* It is commonly used for payment card number checksum validation.
+* It is deterministic.
+* It does not require an external API.
+* It is simple enough to understand and test.
+* It keeps the implementation self-contained.
+
+The algorithm only validates the mathematical structure of the number.
+
+It does not perform actual payment-card verification.
+
+---
+
+# Error Handling
+
+The API distinguishes between **invalid input** and a **card number that fails validation**.
+
+### Malformed request
+
+For example:
+
+```json
+{}
+```
+
+returns:
+
+```http
+400 Bad Request
+```
+
+because the request itself does not satisfy the API contract.
+
+### Valid request containing an invalid card number
+
+For example:
+
+```json
+{
+  "cardNumber": "4111111111111112"
+}
+```
+
+returns:
+
+```http
+200 OK
+```
+
+with:
+
+```json
+{
+  "valid": false
+}
+```
+
+The request was valid and successfully processed; the card number simply failed the Luhn check.
+
+---
+
+# Testing
+
+The project includes both unit and end-to-end tests.
+
+## Run Unit Tests
+
+```bash
+bun run test
+```
+
+Unit tests verify the card validation service independently from the HTTP layer.
+
+Examples include:
+
+* Valid card numbers
+* Invalid card numbers
+* Card numbers containing spaces
+* Non-numeric input
+
+---
+
+## Run End-to-End Tests
+
+```bash
+bun run test:e2e
+```
+
+The e2e tests verify the complete API flow.
+
+They test:
+
+* Valid card number
+* Invalid card number
+* Card number containing spaces
+* Missing card number
+* Incorrect card number type
+* Unexpected request fields
+
+The e2e tests exercise the application through HTTP rather than directly calling the service.
+
+---
+
+## Run Tests in Watch Mode
+
+```bash
+bun run test:watch
+```
+
+---
+
+# Design Decisions
+
+## 1. Why NestJS?
+
+NestJS was chosen because it provides a structured architecture based around:
+
+* Modules
+* Controllers
+* Services
+* Dependency injection
+
+This makes the application easy to understand and allows the project to remain maintainable as it grows.
+
+---
+
+## 2. Why TypeScript?
+
+TypeScript provides static typing and improves code reliability.
+
+The project also uses:
+
+```json
+{
+  "strict": true
+}
+```
+
+This enables stricter compile-time checks and helps identify potential type-related problems during development.
+
+---
+
+## 3. Why a DTO?
+
+The DTO defines the API's expected request structure.
+
+Instead of allowing arbitrary request data into the application, the DTO provides a clear contract:
+
+```typescript
+{
+  cardNumber: string;
+}
+```
+
+This also allows NestJS and `class-validator` to handle request validation before the business logic executes.
+
+---
+
+## 4. Why keep the algorithm in the service?
+
+The controller is responsible for HTTP concerns, while the service contains the business logic.
+
+This separation makes the code easier to:
+
+* Test
+* Read
+* Maintain
+* Modify
+
+It also means the validation logic isn't tightly coupled to HTTP.
+
+---
+
+## 5. Why use POST?
+
+The endpoint receives a card number as request data.
+
+Using POST allows the card number to be sent in the request body rather than exposing it as part of the URL.
+
+Example:
+
+```http
+POST /cards/validate
+```
+
+with:
+
+```json
+{
+  "cardNumber": "4111111111111111"
+}
+```
+
+---
+
+## 6. Why return `valid: false` instead of `400`?
+
+There is an important distinction between an invalid request and an invalid card number.
+
+This is a valid API request:
+
+```json
+{
+  "cardNumber": "4111111111111112"
+}
+```
+
+The request has the correct structure and type, so the server can successfully process it.
+
+The result is simply:
+
+```json
+{
+  "valid": false
+}
+```
+
+On the other hand, this is an invalid request:
+
+```json
+{}
+```
+
+because the required `cardNumber` field is missing.
+
+Therefore, it returns:
+
+```http
+400 Bad Request
+```
+
+---
+
+## 7. Why accept spaces?
+
+Card numbers are commonly displayed in groups:
+
+```text
+4111 1111 1111 1111
+```
+
+Allowing spaces makes the API more user-friendly.
+
+The spaces are removed before validation, while the original input format does not need to be modified by the client.
+
+---
+
+# Limitations
+
+This API performs checksum validation only.
+
+It does not:
+
+* Verify that a card was actually issued
+* Check whether a card is active
+* Check available balance
+* Verify CVV
+* Verify expiration date
+* Identify the cardholder
+* Contact a bank or payment processor
+* Authorize transactions
+* Guarantee that a card can be used for payment
+
+A number passing the Luhn algorithm should therefore be interpreted as:
+
+> "The card number has a valid checksum."
+
+Not:
+
+> "This is a real and usable card."
+
+---
+
+# Development
+
+The application follows a simple feature-based NestJS structure.
+
+The main request flow is:
+
+```text
+HTTP Request
+     │
+     ▼
+Card Controller
+     │
+     ▼
+DTO Validation
+     │
+     ▼
+Card Service
+     │
+     ▼
+Luhn Algorithm
+     │
+     ▼
+Validation Result
+     │
+     ▼
+HTTP Response
+```
+
+This keeps responsibilities separated without introducing unnecessary abstractions for a small application.
+
+---
+
+# Available Scripts
+
+| Command              | Description                     |
+| -------------------- | ------------------------------- |
+| `bun run start`      | Start the application           |
+| `bun run start:dev`  | Start in development/watch mode |
+| `bun run start:prod` | Start the production build      |
+| `bun run build`      | Build the application           |
+| `bun run test`       | Run unit tests                  |
+| `bun run test:watch` | Run tests in watch mode         |
+| `bun run test:e2e`   | Run end-to-end tests            |
+| `bun run lint`       | Run ESLint                      |
+
+---
+
+# API Example
+
+Using cURL:
+
+```bash
+curl -X POST http://localhost:3000/cards/validate \
+  -H "Content-Type: application/json" \
+  -d '{"cardNumber":"4111111111111111"}'
+```
+
+Response:
+
+```json
+{
+  "valid": true
+}
+```
+
+---
+
+# License
+
+This project was created for a backend engineering assessment.
+
+---
+
+# Author
+
+**Khalid Zikirullah**
+
+Backend / Software Developer
